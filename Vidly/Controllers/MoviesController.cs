@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using Vidly.Models;
+using Vidly.ViewModels;
 
 namespace Vidly.Controllers
 {
@@ -16,7 +14,17 @@ namespace Vidly.Controllers
             {
                 Name = "Shrek!"
             };
-            return View(movie);
+            var customers = new List<Customer>
+            {
+                new Customer {Name = "Customer 1"},
+                new Customer {Name = "Customer 2"}
+            };
+            var viewModel = new RandomMovieViewModel
+            {
+                Movie = movie,
+                Customers = customers
+            };
+            return View(viewModel);
         }
 
         public ActionResult Edit(int id)
@@ -24,19 +32,23 @@ namespace Vidly.Controllers
             return Content("id=" + id);
         }
 
-        public ActionResult Index(int? pageIndex, string sortBy)
+        public ActionResult Index()
         {
-            if (!pageIndex.HasValue)
+            var movies = new List<Movie>
             {
-                pageIndex = 1;
-            }
-            if (string.IsNullOrWhiteSpace(sortBy))
+                new Movie {Id = 1, Name = "Faustão e Malandro"},
+                new Movie {Id = 2, Name = "A Lagoa Azul 2"}
+            };
+
+            var moviesList = new MoviesListViewModel
             {
-                sortBy = "Name";
-            }
-            return Content($"pageIndex={pageIndex}&sortBy={sortBy}");
+                Movies = movies
+            };
+
+            return View(moviesList);
         }
 
+        [Route("movies/released/{year:regex(\\d{4})}/{month:regex(\\d{2}):range(1, 12)}")]
         public ActionResult ByReleaseDate(int year, int month)
         {
             return Content($"{year}/{month}");
